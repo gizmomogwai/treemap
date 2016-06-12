@@ -9,9 +9,9 @@ task :test do
   sh "dub test treemap:core"
 end
 
-desc 'run app'
-task :run do
-  sh "dub run"
+desc 'clean'
+task :clean do
+  
 end
 
 task :default => :test

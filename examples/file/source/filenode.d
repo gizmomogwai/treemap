@@ -52,12 +52,6 @@ FileNode calcFileNode(DirEntry entry) {
   }
 }
 
-/*
-unittest {
-  auto res = calcFileNode(DirEntry("."));
-  writeln(res);
-}
-*/
 size_t calcSize(DirEntry entry) {
   if (entry.isDir) {
     size_t res = 0;
@@ -77,16 +71,4 @@ size_t calcSize(DirEntry entry) {
 
 size_t calcSize(string file) {
   return calcSize(DirEntry(file));
-}
-
-unittest {
-  writeln(calcSize("."));
-}
-
-@("sorting")
-unittest {
-  struct T {
-    double size;
-  }
-  writeln(sort!"a.size < b.size"([T(1), T(2), T(3), T(4), T(5)]));
 }

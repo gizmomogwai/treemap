@@ -7,7 +7,7 @@ license "MIT"
 configuration "unittest" {
   dependency "unit-threaded" version="*"
   targetType "executable"
-  preBuildCommands "dub run unit-threaded -c gen_ut_main -- -f bin/ut.d"
+  preBuildCommands "cd core && dub run unit-threaded -c gen_ut_main -- -f bin/ut.d"
   mainSourceFile "bin/ut.d"
   excludedSourceFiles "source/app.d"
 }
