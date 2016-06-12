@@ -1,0 +1,7 @@
+language: d
+sudo: false
+before_install:
+  - pip install --user codecov
+script: dub test treemap:core --compiler=${DC} --coverage
+after_success:
+  - codecov
