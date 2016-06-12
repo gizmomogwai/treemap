@@ -1,2 +1,2 @@
-* Implementation of Treemaps for D [[http://code.dlang.org/packages/treemap][https://img.shields.io/dub/v/treemap.svg]]
+* Implementation of Treemaps for D [[http://code.dlang.org/packages/treemap][https://img.shields.io/dub/v/treemap.svg]] [[https://travis-ci.org/gizmomogwai/treemap][https://travis-ci.org/gizmomogwai/treemap.svg?branch=master]]
 Especially squaified treemaps. See docs directory for original paper.
