@@ -1,0 +1,9 @@
+name "dlangui"
+description "Treemap in D."
+copyright "Copyright © 2016, gizmo"
+authors "gizmo"
+license "MIT"
+
+dependency "treemap:core" version="*"
+dependency "dlangui" version="0.8.30"
+targetType "library"

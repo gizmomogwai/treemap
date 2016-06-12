@@ -1,0 +1,21 @@
+name "file"
+description "Directory Opus in D."
+copyright "Copyright © 2016, gizmo"
+authors "gizmo"
+license "MIT"
+
+dependency "treemap:dlangui" version="*"
+
+configuration "debug" {
+  targetType "executable"
+  mainSourceFile "source/app.d"
+}
+
+configuration "unittest" {
+  dependency "unit-threaded" version="*"
+  targetType "executable"
+  preBuildCommands "dub run unit-threaded -c gen_ut_main -- -f bin/ut.d"
+  mainSourceFile "bin/ut.d"
+  excludedSourceFiles "source/app.d"
+}
+

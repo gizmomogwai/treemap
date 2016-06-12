@@ -1,0 +1,12 @@
+name "treemap"
+description "Treemap in D."
+copyright "Copyright © 2016, gizmo"
+authors "gizmo"
+license "MIT"
+
+subPackage "core"
+subPackage "dlangui"
+subPackage "examples/file"
+subPackage "examples/nofile"
+
+targetType "none"
