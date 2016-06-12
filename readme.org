@@ -1,0 +1,2 @@
+* Implementation of Treemaps for D
+Especially squaified treemaps. See docs directory for original paper.
