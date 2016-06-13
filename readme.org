@@ -1,3 +1,3 @@
-* Implementation of Treemaps for D [[http://code.dlang.org/packages/treemap][https://img.shields.io/dub/v/treemap.svg]] [[https://travis-ci.org/gizmomogwai/treemap][https://travis-ci.org/gizmomogwai/treemap.svg?branch=master]] [[https://codecov.io/github/gizmomogwai/treemap][https://codecov.io/github/gizmomogwai/treemap/coverage.svg?branch=master]]
+* Implementation of Treemaps for D [[http://code.dlang.org/packages/treemap][https://img.shields.io/dub/v/treemap.svg]] [[https://travis-ci.org/gizmomogwai/treemap][https://img.shields.io/travis/gizmomogwai/treemap.svg]] [[https://codecov.io/github/gizmomogwai/treemap][https://img.shields.io/codecov/c/github/gizmomogwai/treemap.svg]] [[https://raw.githubusercontent.com/gizmomogwai/treemap/master/LICENSE.md][https://img.shields.io/dub/l/treemap.svg]]
 
 This is especially an implementation of squarified [[https://en.wikipedia.org/wiki/Treemapping][treemaps]], not a map datastructure implemented on top of trees!
