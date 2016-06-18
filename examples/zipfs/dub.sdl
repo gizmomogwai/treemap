@@ -1,4 +1,4 @@
-name "file"
+name "zipfs"
 description "Directory Opus in D."
 copyright "Copyright © 2016, gizmo"
 authors "gizmo"

@@ -8,5 +8,6 @@ subPackage "core"
 subPackage "dlangui"
 subPackage "examples/file"
 subPackage "examples/nofile"
+subPackage "examples/zipfs"
 
 targetType "none"
