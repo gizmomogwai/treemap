@@ -20,7 +20,7 @@ auto doZipExample(string[] args, ref TextWidget text) {
   auto path = args.length == 2 ? args[1] : ".";
   StopWatch sw;
   sw.start();
-  auto zipArchive = new ZipArchive(read("test.zip"));
+  auto zipArchive = new ZipArchive(read(path));
   auto zip = ZipFile.create(zipArchive);
   foreach (child; zip.childs) {
     writeln("on root directory of zip: ", child);

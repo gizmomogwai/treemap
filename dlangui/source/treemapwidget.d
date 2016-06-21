@@ -34,24 +34,78 @@ class TreeMapWidget(Node) : Widget {
 
   tm.TreeMap!Node treeMap;
 
+  Node lastSelected;
+  MouseEvent lastMouseEvent;
+
+  Node[] lastNodes ;
+
+  void up() {
+    if ((lastNodes != null) && (lastNodes.length >= 1)) {
+      auto node = lastNodes[$-1];
+      lastNodes = lastNodes[0..$-1];
+      treeMap = new tm.TreeMap!Node(node);
+      treeMap.layout(tm.Rect(0, 0, pos.width, pos.height));
+      invalidate();
+    }
+  }
+
   this(string id, Node rootNode) {
     super(id);
     this.treeMap = new tm.TreeMap!Node(rootNode);
+    clickable = true;
+    focusable = true;
+
+    click.connect(
+      delegate(Widget w) {
+        auto r = treeMap.findFor(lastMouseEvent.pos.x, lastMouseEvent.pos.y);
+        r.tryVisit!((Node node) {
+            if (node.children != null) {
+              lastNodes ~= treeMap.rootNode;
+              treeMap = new tm.TreeMap!Node(node);
+              treeMap.layout(tm.Rect(0, 0, w.pos.width, w.pos.height));
+              invalidate();
+            } else {
+            }
+          });
+        return true;
+      }
+    );
+
+    keyEvent.connect(
+      delegate(Widget source, KeyEvent event) {
+        if ((event.keyCode == 8) && (event.action == KeyAction.KeyUp)) {
+          up();
+          return true;
+        }
+        return false;
+      }
+    );
+
+    mouseEvent.connect(
+      delegate(Widget w, MouseEvent me) {
+        writeln("mouseEvent: ", me);
+        lastMouseEvent = me;
+        auto r = treeMap.findFor(me.pos.x, me.pos.y);
+        Node selected;
+        r.tryVisit!(
+          (Node node) { selected = node; },
+          () {},
+        )();
+
+        if (selected != lastSelected) {
+          writeln("selected a new different node");
+          lastSelected = selected;
+          onTreeMapFocused(selected);
+          return true;
+        }
+        return false;
+      });
   }
 
   public Signal!OnTreeMapHandler onTreeMapFocused;
   public auto addTreeMapFocusedListener(void delegate (Node) listener) {
     onTreeMapFocused.connect(listener);
     return this;
-  }
-
-  override bool onMouseEvent(MouseEvent me) {
-    auto r = treeMap.findFor(me.pos.x, me.pos.y);
-    r.tryVisit!(
-      (Node node) { onTreeMapFocused(node); },
-      () {},
-    )();
-    return true;
   }
 
   override void layout(Rect r) {
