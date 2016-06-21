@@ -83,17 +83,14 @@ class TreeMapWidget(Node) : Widget {
 
     mouseEvent.connect(
       delegate(Widget w, MouseEvent me) {
-        writeln("mouseEvent: ", me);
         lastMouseEvent = me;
         auto r = treeMap.findFor(me.pos.x, me.pos.y);
         Node selected;
         r.tryVisit!(
-          (Node node) { selected = node; },
-          () {},
+          (Node node) { selected = node; }
         )();
 
         if (selected != lastSelected) {
-          writeln("selected a new different node");
           lastSelected = selected;
           onTreeMapFocused(selected);
           return true;

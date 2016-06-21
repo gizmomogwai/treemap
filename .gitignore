@@ -4,3 +4,5 @@ bin
 *.o
 /examples/file/treemap_file
 /examples/nofile/treemap_nofile
+/examples/zipfs/treemap_zipfs
+/docs.json

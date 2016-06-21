@@ -7,7 +7,7 @@ import std.algorithm;
 struct FileNode {
   string name;
   ulong size;
-  FileNode[] childs;
+  FileNode[] children;
   bool invalid;
   this(string name) {
     this.name = name;
@@ -19,7 +19,10 @@ struct FileNode {
   this(string name, ulong size, FileNode[] childs) {
     this.name = name;
     this.size = size;
-    this.childs = childs;
+    this.children = childs;
+  }
+  FileNode[] childs() {
+    return children;
   }
   ulong getSize() {
     return size;
