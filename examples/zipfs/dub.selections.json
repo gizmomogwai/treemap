@@ -5,9 +5,8 @@
 		"derelict-gl3": "1.0.18",
 		"derelict-sdl2": "2.0.0",
 		"derelict-util": "2.0.6",
-		"dlangui": "0.8.30",
+		"dlangui": "0.8.36",
 		"dsfml": "2.1.1",
-		"unit-threaded": "0.6.17",
 		"x11": "1.0.14"
 	}
 }

@@ -1,6 +1,10 @@
 name "file"
-description "Directory Opus in D."
+description "treemap in the filesystem."
 copyright "Copyright © 2016, gizmo"
 authors "gizmo"
 license "MIT"
 dependency "treemap:dlangui" version="*"
+
+configuration "unittest" {
+  excludedSourceFiles "source/app.d"
+}

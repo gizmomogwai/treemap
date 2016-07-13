@@ -5,9 +5,6 @@ authors "gizmo"
 license "MIT"
 
 configuration "unittest" {
-  dependency "unit-threaded" version="*"
   targetType "executable"
-  preBuildCommands "cd core && dub run unit-threaded -c gen_ut_main -- -f bin/ut.d"
-  mainSourceFile "bin/ut.d"
-  excludedSourceFiles "source/app.d"
+  sourcePaths "tests"
 }

@@ -59,7 +59,7 @@ class TreeMapWidget(Node) : Widget {
       delegate(Widget w) {
         auto r = treeMap.findFor(lastMouseEvent.pos.x, lastMouseEvent.pos.y);
         r.tryVisit!((Node node) {
-            if (node.children != null) {
+            if (node.childs != null) {
               lastNodes ~= treeMap.rootNode;
               treeMap = new tm.TreeMap!Node(node);
               treeMap.layout(tm.Rect(0, 0, w.pos.width, w.pos.height));

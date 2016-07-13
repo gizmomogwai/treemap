@@ -1,7 +1,11 @@
 name "nofile"
-description "Directory Opus in D."
+description "treemap on pure d data."
 copyright "Copyright © 2016, gizmo"
 authors "gizmo"
 license "MIT"
 
 dependency "treemap:dlangui" version="*"
+
+configuration "unittest" {
+  excludedSourceFiles "source/app.d"
+}

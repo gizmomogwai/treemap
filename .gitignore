@@ -6,3 +6,6 @@ bin
 /examples/nofile/treemap_nofile
 /examples/zipfs/treemap_zipfs
 /docs.json
+__test__*
+/core/core
+/core/treemap_core

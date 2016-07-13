@@ -1,5 +1,5 @@
 name "zipfs"
-description "Directory Opus in D."
+description "treemap for zip-files."
 copyright "Copyright © 2016, gizmo"
 authors "gizmo"
 license "MIT"
