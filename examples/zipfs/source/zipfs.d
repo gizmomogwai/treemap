@@ -39,7 +39,7 @@ class ZipFile {
   string name;
   ArchiveMember member;
   ZipFile[string] children;
-  size_t size;
+  size_t weight;
   this(string name, ArchiveMember member) {
     this(name);
     this.member = member;
@@ -69,10 +69,10 @@ class ZipFile {
       foreach (child; childs) {
         child.calcSize();
       }
-      size = childs.map!(v => v.size).sum;
+      weight = childs.map!(v => v.weight).sum;
     } else {
       assert(member);
-      size = member.expandedSize;
+      weight = member.expandedSize;
     }
   }
   void add(ArchiveMember member) {
@@ -93,7 +93,7 @@ class ZipFile {
     return toString("");
   }
   string toString(string prefix) {
-    auto res = prefix ~ (member !is null ? member.name : name) ~ " (" ~ size.to!string ~ ")\n";
+    auto res = prefix ~ (member !is null ? member.name : name) ~ " (" ~ weight.to!string ~ ")\n";
     foreach (child; childs) {
       res ~= child.toString(prefix ~ "  ");
     }

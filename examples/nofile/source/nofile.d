@@ -13,18 +13,18 @@ import treemapwidget;
 
 class Node {
   string name;
-  double size;
+  double weight;
   Node[] childs;
-  this(string name, double size) {
+  this(string name, double weight) {
     this.name = name;
-    this.size = size;
+    this.weight = weight;
   }
   this(string name, Node[] childs) {
-    this(name, childs.map!(v => v.size).sum);
+    this(name, childs.map!(v => v.weight).sum);
     this.childs = childs;
   }
   override string toString() {
-    return "Node { size: " ~ size.to!string ~ " }";
+    return "Node { weight: " ~ weight.to!string ~ " }";
   }
 }
 

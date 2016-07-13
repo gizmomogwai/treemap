@@ -29,7 +29,7 @@ auto doZipExample(string[] args, ref TextWidget text) {
   writeln("getting file infos took: ", sw.peek().msecs, "ms");
   auto w = new TreeMapWidget!ZipFile("zipmap", zip);
   w.addTreeMapFocusedListener((ZipFile node) {
-      text.text = node.getName().to!dstring ~ " (" ~ node.size.humanize.to!dstring ~ "Byte)";
+      text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
     });
   return w;
 }

@@ -62,14 +62,14 @@ unittest {
 }
 
 template TreeMap(Node) {
-  double size(Node[] nodes) {
-    return nodes.map!(v => v.size).sum;
+  double weight(Node[] nodes) {
+    return nodes.map!(v => v.weight).sum;
   }
 
   /++
    + A Treemap is a compact two dimensional representation of the
-   + "size" of Nodes to each other.
-   + Each Node has a size that is used to determine how much space is
+   + "weigth" of Nodes to each other.
+   + Each Node has a weight that is used to determine how much space is
    + reserved for this Node when laying the Treemap out on a Rect.
    +/
   class TreeMap {
@@ -83,7 +83,7 @@ template TreeMap(Node) {
      + Layouts the treemap for a Rect.
      +/
     TreeMap layout(Rect rect) {
-      layout(rootNode.childs, rootNode.size, rect);
+      layout(rootNode.childs, rootNode.weight, rect);
       return this;
     }
 
@@ -114,15 +114,15 @@ template TreeMap(Node) {
       return treeMap[n];
     }
 
-    private void layout(Node[] childs, double size, Rect rect) {
-      Row row = Row(rect, size);
+    private void layout(Node[] childs, double weight, Rect rect) {
+      Row row = Row(rect, weight);
       Node[] rest = childs;
       while (rest.length > 0) {
         Node child = rest.front();
         Row newRow = row.add(child);
 
         if (newRow.worstAspectRatio > row.worstAspectRatio) {
-          layout(rest, rest.size(), row.imprint(treeMap));
+          layout(rest, rest.weight(), row.imprint(treeMap));
           return;
         }
 
@@ -145,8 +145,8 @@ template TreeMap(Node) {
     private struct Row {
       /// the total area that the row could take
       Rect rect;
-      /// the total size that corresponds to the total area
-      double size;
+      /// the total weight that corresponds to the total area
+      double weight;
 
       double fixedLength;
       double variableLength;
@@ -155,33 +155,33 @@ template TreeMap(Node) {
       double worstAspectRatio;
       double area;
 
-      public this(Rect rect, double size) {
+      public this(Rect rect, double weigth) {
         this.rect = rect;
-        this.size = size;
+        this.weight = weigth;
         this.fixedLength = min(rect.width, rect.height);
         this.variableLength = 0;
         this.worstAspectRatio = double.max;
         this.area = 0;
       }
 
-      private static double aspectRatio(double size, double sharedLength, double l2) {
-        double l1 = sharedLength * size;
+      private static double aspectRatio(double weight, double sharedLength, double l2) {
+        double l1 = sharedLength * weight;
         return max(l1/l2, l2/l1);
       }
 
-      public this(Rect rect, Node[] childs, double size) {
-        this(rect, size);
+      public this(Rect rect, Node[] childs, double weight) {
+        this(rect, weight);
         this.childs = childs;
-        double sizeOfAllChilds = childs.size();
-        double percentageOfTotalArea = sizeOfAllChilds / size;
+        double weightOfAllChilds = childs.weight();
+        double percentageOfTotalArea = weightOfAllChilds / weight;
         this.variableLength = max(rect.width, rect.height) * percentageOfTotalArea;
         double height = min(rect.width, rect.height);
-        this.worstAspectRatio = childs.map!(n => aspectRatio(n.size, height / sizeOfAllChilds, variableLength)).reduce!max;
+        this.worstAspectRatio = childs.map!(n => aspectRatio(n.weight, height / weightOfAllChilds, variableLength)).reduce!max;
       }
 
       public Row add(Node n) {
         Node[] tmp = childs ~ n;
-        return Row(rect, childs~n, size);
+        return Row(rect, childs~n, weight);
       }
 
       public Rect imprint(ref Rect[Node] treemap) {
@@ -195,7 +195,7 @@ template TreeMap(Node) {
       private Rect imprintLeft(ref Rect[Node] treemap) {
         double offset = 0;
         foreach (child; childs) {
-          double percentage = child.size / childs.size();
+          double percentage = child.weight / childs.weight();
           double height = percentage * rect.height;
           treemap[child] = Rect(rect.x, rect.y+offset, variableLength, height);
           offset += height;
@@ -206,7 +206,7 @@ template TreeMap(Node) {
       private Rect imprintTop(ref Rect[Node] treemap) {
         double offset = 0;
         foreach(child; childs) {
-          double percentage = child.size / childs.size();
+          double percentage = child.weight / childs.weight();
           double width = percentage * rect.width;
           treemap[child] = Rect(rect.x+offset, rect.y+0, width, variableLength);
           offset += width;
@@ -220,14 +220,14 @@ template TreeMap(Node) {
 @("Treemap")
 unittest {
   class Node {
-    double size;
+    double weight;
     Node[] childs;
-    this(double size) {
-      this.size = size;
+    this(double weight) {
+      this.weight = weight;
     }
     this(Node[] childs) {
       this.childs = childs;
-      this.size = childs.map!(v => v.size).sum;
+      this.weight = childs.map!(v => v.weight).sum;
     }
   }
 
