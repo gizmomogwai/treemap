@@ -3,7 +3,6 @@ module zipfs;
 
 import std.zip;
 import std.file;
-import std.variant;
 import std.path;
 import std.stdio;
 import std.algorithm;

@@ -1,5 +1,4 @@
 import std.file;
-import std.variant;
 import std.path;
 import std.stdio;
 import dlangui;

@@ -58,7 +58,8 @@ class TreeMapWidget(Node) : Widget {
     click.connect(
       delegate(Widget w) {
         auto r = treeMap.findFor(lastMouseEvent.pos.x, lastMouseEvent.pos.y);
-        r.tryVisit!((Node node) {
+        r.tryVisit!(
+          (Node node) {
             if (node.childs != null) {
               lastNodes ~= treeMap.rootNode;
               treeMap = new tm.TreeMap!Node(node);
@@ -66,7 +67,8 @@ class TreeMapWidget(Node) : Widget {
               invalidate();
             } else {
             }
-          });
+          },
+          () {});
         return true;
       }
     );
@@ -87,7 +89,8 @@ class TreeMapWidget(Node) : Widget {
         auto r = treeMap.findFor(me.pos.x, me.pos.y);
         Node selected;
         r.tryVisit!(
-          (Node node) { selected = node; }
+          (Node node) { selected = node; },
+          () {}
         )();
 
         if (selected != lastSelected) {
@@ -124,8 +127,16 @@ class TreeMapWidget(Node) : Widget {
 
     auto font = FontManager.instance.getFont(25, FontWeight.Normal, false, FontFamily.SansSerif, "Arial");
 
-    foreach(child; treeMap.rootNode.childs) {
-      buf.drawFrame(treeMap.get(child).toUiRect(), 0xff00ff, Rect(1, 1, 1, 1), 0xa0a0a0);
+    drawNode(treeMap.rootNode, buf);
+  }
+  private void drawNode(Node n, DrawBuf buf) {
+    auto r = treeMap.get(n);
+    writeln("found ", r, " for ", n);
+    if (r) {
+      buf.drawFrame((*r).toUiRect(), 0xff00ff, Rect(1, 1, 1, 1), 0xa0a0a0);
+      foreach (child; n.childs) {
+        drawNode(child, buf);
+      }
     }
   }
 }

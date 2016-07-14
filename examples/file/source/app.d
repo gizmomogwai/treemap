@@ -1,7 +1,6 @@
 module app;
 
 import std.file;
-import std.variant;
 import std.path;
 import std.stdio;
 import std.algorithm;
@@ -24,7 +23,7 @@ auto doFileExample(string[] args, ref TextWidget text) {
   writeln("getting file infos took: ", sw.peek().msecs, "ms");
   auto w = new TreeMapWidget!FileNode("filemap", fileNode);
   w.addTreeMapFocusedListener((FileNode node) {
-      text.text = node.getName().to!dstring ~ " (" ~ node.size.humanize.to!dstring ~ "Byte)";
+      text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
     });
   return w;
 }

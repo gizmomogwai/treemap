@@ -1,7 +1,6 @@
 module app;
 
 import std.file;
-import std.variant;
 import std.path;
 import std.stdio;
 import std.algorithm;
@@ -53,4 +52,3 @@ extern (C) int UIAppMain(string[] args) {
   window.show();
   return Platform.instance.enterMessageLoop();
 }
-

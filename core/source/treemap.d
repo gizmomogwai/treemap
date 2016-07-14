@@ -12,10 +12,10 @@ module treemap;
 import std.file;
 import std.stdio;
 import std.format;
+import std.variant;
 import std.conv;
 import std.algorithm;
 import std.range;
-import std.variant;
 
 /++
  + Rect struct used to store the positions of the Nodes in the
@@ -52,13 +52,12 @@ struct Rect {
 
 @("Rect.basics")
 unittest {
-  import unit_threaded;
   auto r = Rect(10, 11, 20, 30);
-  r.contains(15, 15).shouldEqual(true);
-  r.left.shouldEqual(10);
-  r.top.shouldEqual(11);
-  r.right.shouldEqual(30);
-  r.bottom.shouldEqual(41);
+  assert(true == r.contains(15, 15));
+  assert(10 == r.left);
+  assert(11 == r.top);
+  assert(30 == r.right);
+  assert(41 == r.bottom);
 }
 
 template TreeMap(Node) {
@@ -82,27 +81,38 @@ template TreeMap(Node) {
     /++
      + Layouts the treemap for a Rect.
      +/
-    TreeMap layout(Rect rect) {
-      layout(rootNode.childs, rootNode.weight, rect);
+    TreeMap layout(Rect rect, int depth=3) {
+      treeMap[rootNode] = rect;
+      layout(rootNode.childs, rootNode.weight, rect, depth);
       return this;
     }
 
     alias Maybe = Algebraic!(Node, typeof(null));
+
+
     /++
-     + Find the Node for a position.
+     + Finds the deepest Node that contains the given position.
      + @return Maybe!Node
      + @see Unittest on how to use it.
      +/
     Maybe findFor(double x, double y) {
-      foreach (kv; treeMap.byKeyValue()) {
-        auto fileNode = kv.key;
-        auto rect = kv.value;
-        if (rect.contains(x, y)) {
-          Maybe res = fileNode;
-          return res;
+      return findFor(x, y, rootNode);
+    }
+
+    Maybe findFor(double x, double y, Node n) {
+      auto r = n in treeMap;
+      if (!r || !((*r).contains(x, y))) {
+        Maybe res = null;
+        return res;
+      }
+
+      foreach (child; n.childs) {
+        auto h = findFor(x, y, child);
+        if (h.type == typeid(Node)) {
+          return h;
         }
       }
-      Maybe res = null;
+      Maybe res = n;
       return res;
     }
 
@@ -110,11 +120,11 @@ template TreeMap(Node) {
      + @param n which rect to return.
      + @return the Rect of the given Node.
      +/
-    Rect get(Node n) {
-      return treeMap[n];
+    Rect* get(Node n) {
+      return n in treeMap;
     }
 
-    private void layout(Node[] childs, double weight, Rect rect) {
+    private void layout(Node[] childs, double weight, Rect rect, int depth) {
       Row row = Row(rect, weight);
       Node[] rest = childs;
       while (rest.length > 0) {
@@ -122,7 +132,13 @@ template TreeMap(Node) {
         Row newRow = row.add(child);
 
         if (newRow.worstAspectRatio > row.worstAspectRatio) {
-          layout(rest, rest.weight(), row.imprint(treeMap));
+          auto h = row.imprint(treeMap);
+          if (depth > 1) {
+            foreach (rowChild; row.childs) {
+              layout(rowChild.childs, rowChild.weight, treeMap[rowChild], depth-1);
+            }
+          }
+          layout(rest, rest.weight(), h, depth);
           return;
         }
 
@@ -184,6 +200,10 @@ template TreeMap(Node) {
         return Row(rect, childs~n, weight);
       }
 
+      /++
+       + adds rect for all nodes in the row to the treemap.
+       + returns the unused rect
+       +/
       public Rect imprint(ref Rect[Node] treemap) {
         if (rect.height < rect.width) {
           return imprintLeft(treemap);
@@ -233,20 +253,19 @@ unittest {
 
   import std.math : approxEqual;
   import std.algorithm : equal;
-  import unit_threaded;
 
   void shouldEqual2(Rect r1, Rect r2) {
-    r1.x.shouldEqual(r2.x);
-    r1.y.shouldEqual(r2.y);
-    r1.width.shouldEqual(r2.width);
-    r1.height.shouldEqual(r2.height);
+    assert(approxEqual(r2.x, r1.x));
+    assert(approxEqual(r2.y, r1.y));
+    assert(approxEqual(r2.width, r1.width));
+    assert(approxEqual(r2.height, r1.height));
   }
 
   auto childs = [ 6, 6, 4, 3, 2, 2, 1 ].map!(v => new Node(v)).array;
   auto n = new Node(childs);
   auto res = new TreeMap!(Node)(n).layout(Rect(0, 0, 600, 400));
   void check(int idx, Rect r) {
-    shouldEqual2(res.get(childs[idx]), r);
+    shouldEqual2(*res.get(childs[idx]), r);
   }
   check(0, Rect(0, 0, 300, 200));
   check(1, Rect(0, 200, 300, 200));
@@ -258,14 +277,12 @@ unittest {
   check(5, Rect(420, 233, 120, 166));
   check(6, Rect(540, 233, 60, 166));
 
-  auto found = res.findFor(1, 1);
-  found.tryVisit!(
+  res.findFor(1, 1).tryVisit!(
     (Node n) {},
     () {assert(false);}
-  )();
-  auto notFound = res.findFor(-1, -1);
-  notFound.tryVisit!(
-    (typeof(null) n) {},
-    () {assert(false);}
-  )();
+  );
+  res.findFor(-1, -1).tryVisit!(
+    (Node n) {assert(false);},
+    () {}
+  );
 }

@@ -6,33 +6,33 @@ import std.algorithm;
 
 struct FileNode {
   string name;
-  ulong size;
+  ulong weight;
   FileNode[] children;
   bool invalid;
   this(string name) {
     this.name = name;
     this.invalid = true;
   }
-  this(string name, ulong size) {
-    this(name, size, null);
+  this(string name, ulong weight) {
+    this(name, weight, null);
   }
-  this(string name, ulong size, FileNode[] childs) {
+  this(string name, ulong weight, FileNode[] childs) {
     this.name = name;
-    this.size = size;
+    this.weight = weight;
     this.children = childs;
   }
   FileNode[] childs() {
     return children;
   }
-  ulong getSize() {
-    return size;
+  ulong getWeight() {
+    return weight;
   }
   string getName() {
     return name;
   }
   string toString() {
     import std.conv;
-    return "{ name: \"" ~getName() ~ "\" , size: " ~ getSize().to!string ~ " }";
+    return "{ name: \"" ~getName() ~ "\" , weight: " ~ getWeight().to!string ~ " }";
   }
 }
 
@@ -41,8 +41,8 @@ FileNode calcFileNode(DirEntry entry) {
     auto childs = dirEntries(entry.name, SpanMode.shallow, false)
       .map!(v => calcFileNode(v))
       .filter!(v => !v.invalid).array()
-      .sort!((a, b) => a.getSize() > b.getSize()).array();
-    auto childSize = 0L.reduce!((sum, v) => sum + v.getSize)(childs);
+      .sort!((a, b) => a.getWeight() > b.getWeight()).array();
+    auto childSize = 0L.reduce!((sum, v) => sum + v.getWeight)(childs);
     return FileNode(entry, childSize, childs);
   } else {
     try {
