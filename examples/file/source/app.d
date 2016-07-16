@@ -20,8 +20,7 @@ auto doFileExample(string[] args, ref TextWidget text) {
   sw.start();
   auto fileNode = calcFileNode(DirEntry(path.asAbsolutePath.asNormalizedPath.to!string));
   sw.stop();
-  writeln("getting file infos took: ", sw.peek().msecs, "ms");
-  auto w = new TreeMapWidget!FileNode("filemap", fileNode);
+  auto w = new TreeMapWidget!FileNode("filemap", fileNode, 0);
   w.addTreeMapFocusedListener((FileNode node) {
       text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
     });

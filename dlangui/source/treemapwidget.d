@@ -10,11 +10,11 @@ import std.range;
 import dlangui;
 import std.datetime;
 
-Rect toUiRect(tm.Rect r) {
-  return Rect(cast(int)r.left(),
-              cast(int)r.top(),
-              cast(int)r.right(),
-              cast(int)r.bottom());
+Rect toUiRect(tm.Rect r, int depth) {
+  return Rect(cast(int)r.left() + depth,
+              cast(int)r.top() + depth,
+              cast(int)r.right() - depth,
+              cast(int)r.bottom() - depth);
 }
 
 string humanize(ulong v) {
@@ -36,7 +36,7 @@ class TreeMapWidget(Node) : Widget {
 
   Node lastSelected;
   MouseEvent lastMouseEvent;
-
+  int depth;
   Node[] lastNodes ;
 
   void up() {
@@ -44,14 +44,15 @@ class TreeMapWidget(Node) : Widget {
       auto node = lastNodes[$-1];
       lastNodes = lastNodes[0..$-1];
       treeMap = new tm.TreeMap!Node(node);
-      treeMap.layout(tm.Rect(0, 0, pos.width, pos.height));
+      treeMap.layout(tm.Rect(0, 0, pos.width, pos.height), depth);
       invalidate();
     }
   }
 
-  this(string id, Node rootNode) {
+  this(string id, Node rootNode, int depth=3) {
     super(id);
     this.treeMap = new tm.TreeMap!Node(rootNode);
+    this.depth = depth;
     clickable = true;
     focusable = true;
 
@@ -63,7 +64,7 @@ class TreeMapWidget(Node) : Widget {
             if (node.childs != null) {
               lastNodes ~= treeMap.rootNode;
               treeMap = new tm.TreeMap!Node(node);
-              treeMap.layout(tm.Rect(0, 0, w.pos.width, w.pos.height));
+              treeMap.layout(tm.Rect(0, 0, w.pos.width, w.pos.height), depth);
               invalidate();
             } else {
             }
@@ -111,7 +112,7 @@ class TreeMapWidget(Node) : Widget {
   override void layout(Rect r) {
     StopWatch sw;
     sw.start();
-    treeMap.layout(tm.Rect(0, 0, r.width, r.height));
+    treeMap.layout(tm.Rect(0, 0, r.width, r.height), depth);
     sw.stop();
     super.layout(r);
   }
@@ -127,15 +128,14 @@ class TreeMapWidget(Node) : Widget {
 
     auto font = FontManager.instance.getFont(25, FontWeight.Normal, false, FontFamily.SansSerif, "Arial");
 
-    drawNode(treeMap.rootNode, buf);
+    drawNode(treeMap.rootNode, buf, 0);
   }
-  private void drawNode(Node n, DrawBuf buf) {
+  private void drawNode(Node n, DrawBuf buf, int depth) {
     auto r = treeMap.get(n);
-    writeln("found ", r, " for ", n);
     if (r) {
-      buf.drawFrame((*r).toUiRect(), 0xff00ff, Rect(1, 1, 1, 1), 0xa0a0a0);
+      buf.drawFrame((*r).toUiRect(depth), 0xff00ff, Rect(1, 1, 1, 1), 0xa0a0a0);
       foreach (child; n.childs) {
-        drawNode(child, buf);
+        drawNode(child, buf, depth+1);
       }
     }
   }

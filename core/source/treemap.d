@@ -102,8 +102,7 @@ template TreeMap(Node) {
     Maybe findFor(double x, double y, Node n) {
       auto r = n in treeMap;
       if (!r || !((*r).contains(x, y))) {
-        Maybe res = null;
-        return res;
+        return Maybe(null);
       }
 
       foreach (child; n.childs) {
@@ -112,8 +111,7 @@ template TreeMap(Node) {
           return h;
         }
       }
-      Maybe res = n;
-      return res;
+      return Maybe(n);
     }
 
     /++
