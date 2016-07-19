@@ -94,7 +94,6 @@ template TreeMap(Node) {
      + Layouts the treemap for a Rect.
      +/
     TreeMap layout(Rect rect, int depth=3) {
-      writeln("layout width delta: ", delta);
       treeMap[rootNode] = rect;
       layout(rootNode.childs, rootNode.weight, rect.expand(delta), depth);
       return this;
