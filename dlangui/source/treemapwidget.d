@@ -39,6 +39,7 @@ class TreeMapWidget(Node) : Widget {
   int depth;
   Node[] lastNodes;
   int delta = -10;
+  Node rootNode;
   void up() {
     if ((lastNodes != null) && (lastNodes.length >= 1)) {
       auto node = lastNodes[$-1];
@@ -49,10 +50,24 @@ class TreeMapWidget(Node) : Widget {
     }
   }
 
+  void changeDepth(int delta, Widget w) {
+    this.depth += delta;
+    writeln("changeDepth: ", this.depth);
+    doRedraw(rootNode, w);
+    invalidate();
+  }
+
+  void doRedraw(Node node, Widget w) {
+    treeMap = new tm.TreeMap!Node(node, delta);
+    treeMap.layout(tm.Rect(0, 0, w.pos.width, w.pos.height), depth);
+    invalidate();
+  }
+
   this(string id, Node rootNode, int depth=3) {
     super(id);
     this.treeMap = new tm.TreeMap!Node(rootNode, delta);
     this.depth = depth;
+    this.rootNode = rootNode;
     clickable = true;
     focusable = true;
 
@@ -63,9 +78,7 @@ class TreeMapWidget(Node) : Widget {
           (Node node) {
             if (node.childs != null) {
               lastNodes ~= treeMap.rootNode;
-              treeMap = new tm.TreeMap!Node(node, delta);
-              treeMap.layout(tm.Rect(0, 0, w.pos.width, w.pos.height), depth);
-              invalidate();
+              doRedraw(node, w);
             } else {
             }
           },
@@ -76,10 +89,24 @@ class TreeMapWidget(Node) : Widget {
 
     keyEvent.connect(
       delegate(Widget source, KeyEvent event) {
+        //writeln("KeyEvent: ", event.text, ", ", event.keyCode, ", ", event.action);
+        //writeln("KEY_ADD: ", KeyCode.KEY_ADD.to!int);
+        //writeln("KEY_UP: ", KeyAction.KeyUp.to!int);
         if ((event.keyCode == 8) && (event.action == KeyAction.KeyUp)) {
           up();
           return true;
         }
+        
+        if ((event.keyCode == 65579) && (event.action == KeyAction.KeyUp)) {
+          changeDepth(+1, source);
+          return true;
+        }
+
+        if ((event.keyCode == 65581) && (event.action == KeyAction.KeyUp)) {
+          changeDepth(-1, source);
+          return true;
+        }
+
         return false;
       }
     );

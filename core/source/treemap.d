@@ -53,9 +53,7 @@ struct Rect {
    + the width may also be smaller than 0 then its a shrink.
    +/
   Rect expand(int delta) {
-    Rect res = Rect(x-delta, y-delta, width+2*delta, height+2*delta);
-    writeln("expand: ", this, " to: ", res);
-    return res;
+    return Rect(x-delta, y-delta, width+2*delta, height+2*delta);
   }
   bool empty() {
     return width <= 0 && height <= 0;
