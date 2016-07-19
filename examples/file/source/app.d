@@ -20,28 +20,28 @@ auto doFileExample(string[] args, ref TextWidget text) {
   sw.start();
   auto fileNode = calcFileNode(DirEntry(path.asAbsolutePath.asNormalizedPath.to!string));
   sw.stop();
-  auto w = new TreeMapWidget!FileNode("filemap", fileNode, 0);
+  auto w = new TreeMapWidget!FileNode("filemap", fileNode, 4);
   w.addTreeMapFocusedListener((FileNode node) {
       text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
     });
   return w;
 }
 
+import dlangui.dml.parser;
+
 extern (C) int UIAppMain(string[] args) {
   auto window = Platform.instance.createWindow(to!dstring("treemap"), null);
 
-  auto vl = new VerticalLayout("vl");
-  vl.layoutWidth(FILL_PARENT).layoutHeight(FILL_PARENT);
+  auto vl = parseML!VerticalLayout(q{VerticalLayout{layoutWidth: fill; layoutHeight: fill;}});
 
   auto text = new TextWidget("label", "no selection".to!dstring);
   text.fontSize(32);
 
-  //auto w = doNodeExample(text);
   auto w = doFileExample(args, text);
+  w.backgroundColor(0x000000).layoutWidth(FILL_PARENT).layoutHeight(FILL_PARENT).padding(Rect(10, 10, 10, 10));
 
   vl.addChild(w);
   vl.addChild(text);
-  w.backgroundColor(0x000000).layoutWidth(FILL_PARENT).layoutHeight(FILL_PARENT).padding(Rect(10, 10, 10, 10));
 
   window.mainWidget = vl;
   window.show();

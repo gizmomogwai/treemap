@@ -10,11 +10,11 @@ import std.range;
 import dlangui;
 import std.datetime;
 
-Rect toUiRect(tm.Rect r, int depth) {
-  return Rect(cast(int)r.left() + depth,
-              cast(int)r.top() + depth,
-              cast(int)r.right() - depth,
-              cast(int)r.bottom() - depth);
+Rect toUiRect(tm.Rect r) {
+  return Rect(cast(int)r.left(),
+              cast(int)r.top(),
+              cast(int)r.right(),
+              cast(int)r.bottom());
 }
 
 string humanize(ulong v) {
@@ -37,13 +37,13 @@ class TreeMapWidget(Node) : Widget {
   Node lastSelected;
   MouseEvent lastMouseEvent;
   int depth;
-  Node[] lastNodes ;
-
+  Node[] lastNodes;
+  int delta = -10;
   void up() {
     if ((lastNodes != null) && (lastNodes.length >= 1)) {
       auto node = lastNodes[$-1];
       lastNodes = lastNodes[0..$-1];
-      treeMap = new tm.TreeMap!Node(node);
+      treeMap = new tm.TreeMap!Node(node, delta);
       treeMap.layout(tm.Rect(0, 0, pos.width, pos.height), depth);
       invalidate();
     }
@@ -51,7 +51,7 @@ class TreeMapWidget(Node) : Widget {
 
   this(string id, Node rootNode, int depth=3) {
     super(id);
-    this.treeMap = new tm.TreeMap!Node(rootNode);
+    this.treeMap = new tm.TreeMap!Node(rootNode, delta);
     this.depth = depth;
     clickable = true;
     focusable = true;
@@ -63,7 +63,7 @@ class TreeMapWidget(Node) : Widget {
           (Node node) {
             if (node.childs != null) {
               lastNodes ~= treeMap.rootNode;
-              treeMap = new tm.TreeMap!Node(node);
+              treeMap = new tm.TreeMap!Node(node, delta);
               treeMap.layout(tm.Rect(0, 0, w.pos.width, w.pos.height), depth);
               invalidate();
             } else {
@@ -133,9 +133,12 @@ class TreeMapWidget(Node) : Widget {
   private void drawNode(Node n, DrawBuf buf, int depth) {
     auto r = treeMap.get(n);
     if (r) {
-      buf.drawFrame((*r).toUiRect(depth), 0xff00ff, Rect(1, 1, 1, 1), 0xa0a0a0);
-      foreach (child; n.childs) {
-        drawNode(child, buf, depth+1);
+      auto uiRect = (*r).toUiRect();
+      if (!uiRect.empty()) {
+        buf.drawFrame(uiRect, 0xff00ff, Rect(1, 1, 1, 1), 0xa0a0a0);
+        foreach (child; n.childs) {
+          drawNode(child, buf, depth+1);
+        }
       }
     }
   }

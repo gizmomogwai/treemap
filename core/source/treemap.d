@@ -48,6 +48,18 @@ struct Rect {
     return x >= this.x && x < right() &&
       y >= this.y && y < bottom();
   }
+  /++
+   + expands the rect with a border.
+   + the width may also be smaller than 0 then its a shrink.
+   +/
+  Rect expand(int delta) {
+    Rect res = Rect(x-delta, y-delta, width+2*delta, height+2*delta);
+    writeln("expand: ", this, " to: ", res);
+    return res;
+  }
+  bool empty() {
+    return width <= 0 && height <= 0;
+  }
 }
 
 @("Rect.basics")
@@ -74,16 +86,19 @@ template TreeMap(Node) {
   class TreeMap {
     Rect[Node] treeMap;
     Node rootNode;
-    this(Node root) {
+    int delta;
+    this(Node root, int delta=0) {
       this.rootNode = root;
+      this.delta = delta;
     }
 
     /++
      + Layouts the treemap for a Rect.
      +/
     TreeMap layout(Rect rect, int depth=3) {
+      writeln("layout width delta: ", delta);
       treeMap[rootNode] = rect;
-      layout(rootNode.childs, rootNode.weight, rect, depth);
+      layout(rootNode.childs, rootNode.weight, rect.expand(delta), depth);
       return this;
     }
 
@@ -123,6 +138,10 @@ template TreeMap(Node) {
     }
 
     private void layout(Node[] childs, double weight, Rect rect, int depth) {
+      if (rect.empty()) {
+        return;
+      }
+      
       Row row = Row(rect, weight);
       Node[] rest = childs;
       while (rest.length > 0) {
@@ -133,7 +152,7 @@ template TreeMap(Node) {
           auto h = row.imprint(treeMap);
           if (depth > 1) {
             foreach (rowChild; row.childs) {
-              layout(rowChild.childs, rowChild.weight, treeMap[rowChild], depth-1);
+              layout(rowChild.childs, rowChild.weight, treeMap[rowChild].expand(delta), depth-1);
             }
           }
           layout(rest, rest.weight(), h, depth);
@@ -144,6 +163,11 @@ template TreeMap(Node) {
         rest.popFront();
       }
       row.imprint(treeMap);
+      if (depth > 1) {
+        foreach (rowChild; row.childs) {
+          layout(rowChild.childs, rowChild.weight, treeMap[rowChild].expand(delta), depth-1);
+        }
+      }
     }
 
     /++
