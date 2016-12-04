@@ -8,6 +8,7 @@ import std.range;
 import std.datetime;
 import dlangui;
 import std.variant;
+import std.experimental.logger;
 
 mixin APP_ENTRY_POINT;
 
@@ -26,9 +27,11 @@ auto doFileExample(string[] args, ref TextWidget text) {
   w.addTreeMapFocusedListener((FileTreeMap.Maybe maybeNode) {
       maybeNode.visit!(
         (FileNode node) {
+          log("focused on ", node);
           text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
         },
         (typeof(null)) {
+          log("focused on nothing");
           text.text = "null";
         }
       )();
