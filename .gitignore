@@ -9,3 +9,4 @@ bin
 __test__*
 /core/core
 /core/treemap_core
+/core/treemap_treemap_core

@@ -6,6 +6,10 @@ license "MIT"
 
 dependency "treemap:dlangui" version="*"
 
+configuration "executable" {
+  targetType "executable"
+}
+
 configuration "unittest" {
   excludedSourceFiles "source/app.d"
 }

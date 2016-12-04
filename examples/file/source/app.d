@@ -7,6 +7,7 @@ import std.algorithm;
 import std.range;
 import std.datetime;
 import dlangui;
+import std.variant;
 
 mixin APP_ENTRY_POINT;
 
@@ -20,9 +21,17 @@ auto doFileExample(string[] args, ref TextWidget text) {
   sw.start();
   auto fileNode = calcFileNode(DirEntry(path.asAbsolutePath.asNormalizedPath.to!string));
   sw.stop();
-  auto w = new TreeMapWidget!FileNode("filemap", fileNode, 4);
-  w.addTreeMapFocusedListener((FileNode node) {
-      text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
+  alias FileTreeMap = TreeMapWidget!FileNode;
+  auto w = new FileTreeMap("filemap", fileNode, 4);
+  w.addTreeMapFocusedListener((FileTreeMap.Maybe maybeNode) {
+      maybeNode.visit!(
+        (FileNode node) {
+          text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
+        },
+        (typeof(null)) {
+          text.text = "null";
+        }
+      )();
     });
   return w;
 }

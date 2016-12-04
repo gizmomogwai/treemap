@@ -1,4 +1,5 @@
 module app;
+import dlangui;
 
 import nofile;
 

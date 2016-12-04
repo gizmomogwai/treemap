@@ -7,6 +7,7 @@ import std.algorithm;
 import std.range;
 import std.datetime;
 import dlangui;
+import std.variant;
 
 mixin APP_ENTRY_POINT;
 
@@ -26,9 +27,16 @@ auto doZipExample(string[] args, ref TextWidget text) {
   }
   sw.stop();
   writeln("getting file infos took: ", sw.peek().msecs, "ms");
-  auto w = new TreeMapWidget!ZipFile("zipmap", zip);
-  w.addTreeMapFocusedListener((ZipFile node) {
-      text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
+  alias ZipFileTreeMap = TreeMapWidget!ZipFile;
+  auto w = new ZipFileTreeMap("zipmap", zip);
+  w.addTreeMapFocusedListener((ZipFileTreeMap.Maybe maybe) {
+      maybe.visit!((ZipFile node) {
+          text.text = node.getName().to!dstring ~ " (" ~ node.weight.humanize.to!dstring ~ "Byte)";
+        },
+        (typeof(null)) {
+          text.text = "no selection";
+        }
+      )();
     });
   return w;
 }

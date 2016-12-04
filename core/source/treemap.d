@@ -120,7 +120,7 @@ template TreeMap(Node) {
       foreach (child; n.childs) {
         auto h = findFor(x, y, child);
         if (h.type == typeid(Node)) {
-          return h;
+          return Maybe(h);
         }
       }
       return Maybe(n);
@@ -296,12 +296,12 @@ unittest {
   check(5, Rect(420, 233, 120, 166));
   check(6, Rect(540, 233, 60, 166));
 
-  res.findFor(1, 1).tryVisit!(
+  res.findFor(1, 1).visit!(
     (Node n) {},
-    () {assert(false);}
+    (typeof(null)) {assert(false);}
   );
-  res.findFor(-1, -1).tryVisit!(
+  res.findFor(-1, -1).visit!(
     (Node n) {assert(false);},
-    () {}
+    (typeof(null)) {}
   );
 }

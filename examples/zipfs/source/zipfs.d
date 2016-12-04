@@ -70,8 +70,11 @@ class ZipFile {
       }
       weight = childs.map!(v => v.weight).sum;
     } else {
-      assert(member);
-      weight = member.expandedSize;
+      if (!member) {
+        weight = 0;
+      } else {
+        weight = member.expandedSize;
+      }
     }
   }
   void add(ArchiveMember member) {

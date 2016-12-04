@@ -28,13 +28,15 @@ string humanize(ulong v) {
 }
 
 class TreeMapWidget(Node) : Widget {
+  alias NodeTreeMap = tm.TreeMap!Node;
+  alias Maybe = NodeTreeMap.Maybe;
+  NodeTreeMap treeMap;
   interface OnTreeMapHandler {
-    void onTreeMap(Node node);
+    void onTreeMap(Maybe node);
   }
 
-  tm.TreeMap!Node treeMap;
 
-  Node lastSelected;
+  Maybe lastSelected;
   MouseEvent lastMouseEvent;
   int depth;
   Node[] lastNodes;
@@ -52,7 +54,6 @@ class TreeMapWidget(Node) : Widget {
 
   void changeDepth(int delta, Widget w) {
     this.depth += delta;
-    writeln("changeDepth: ", this.depth);
     doRedraw(rootNode, w);
     invalidate();
   }
@@ -74,7 +75,7 @@ class TreeMapWidget(Node) : Widget {
     click.connect(
       delegate(Widget w) {
         auto r = treeMap.findFor(lastMouseEvent.pos.x, lastMouseEvent.pos.y);
-        r.tryVisit!(
+        r.visit!(
           (Node node) {
             if (node.childs != null) {
               lastNodes ~= treeMap.rootNode;
@@ -82,7 +83,8 @@ class TreeMapWidget(Node) : Widget {
             } else {
             }
           },
-          () {});
+          (typeof(null)) {}
+        )();
         return true;
       }
     );
@@ -115,15 +117,9 @@ class TreeMapWidget(Node) : Widget {
       delegate(Widget w, MouseEvent me) {
         lastMouseEvent = me;
         auto r = treeMap.findFor(me.pos.x, me.pos.y);
-        Node selected;
-        r.tryVisit!(
-          (Node node) { selected = node; },
-          () {}
-        )();
-
-        if (selected != lastSelected) {
-          lastSelected = selected;
-          onTreeMapFocused(selected);
+        if (r != lastSelected) {
+          lastSelected = r;
+          onTreeMapFocused(lastSelected);
           return true;
         }
         return false;
@@ -131,7 +127,7 @@ class TreeMapWidget(Node) : Widget {
   }
 
   public Signal!OnTreeMapHandler onTreeMapFocused;
-  public auto addTreeMapFocusedListener(void delegate (Node) listener) {
+  public auto addTreeMapFocusedListener(void delegate (Maybe) listener) {
     onTreeMapFocused.connect(listener);
     return this;
   }
